@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>프론트엔드 런치패드: 파이썬 프로그래머를 위한 워크숍</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: #f8fafc;
+        }
+
+        /* 디자인 사양 적용 */
+        .primary-text { color: #2563EB; }
+        .secondary-text { color: #475569; }
+        .accent-bg { background-color: #f8fafc; }
+        .importance-high { color: #ef4444; }
+        .importance-mid { color: #f59e0b; }
+        .importance-low { color: #10b981; }
+        
+        .gradient-title {
+            background: linear-gradient(to right, #2563EB, #1D4ED8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 900;
+        }
+
+        .presentation-container {
+            max-width: 1280px;
+            aspect-ratio: 16 / 9;
+            margin: 2rem auto;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            border-radius: 0.75rem;
+            overflow: hidden;
+            background-color: white;
+        }
+
+        .slide {
+            display: none;
+            flex-grow: 1;
+            padding: 4rem 5rem;
+            box-sizing: border-box;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        .slide.active {
+            display: flex;
+            flex-direction: column;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        header {
+            width: 100%;
+            padding: 1.5rem 5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #e2e8f0;
+            background-color: #ffffff;
+        }
+
+        .header-logo {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #475569;
+        }
+
+        .slide-counter {
+            font-size: 1rem;
+            color: #64748b;
+        }
+
+        h1.title {
+            font-size: 32px;
+            font-weight: 900;
+            margin-bottom: 0.5rem;
+        }
+
+        h2.subtitle {
+            font-size: 16px;
+            color: #475569;
+            margin-bottom: 2rem;
+        }
+
+        h3.section-title {
+            font-size: 18px;
+            color: #1e40af;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .slide-body {
+            font-size: 14px;
+            color: #334155;
+            line-height: 1.6;
+            flex-grow: 1;
+        }
+
+        .slide-body ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        
+        .slide-body ul li {
+            position: relative;
+            padding-left: 1.5rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .slide-body ul li::before {
+            content: '■';
+            position: absolute;
+            left: 0;
+            color: #2563EB;
+            font-size: 1rem;
+        }
+
+        .nav-controls {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 1rem;
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 0.5rem 1rem;
+            border-radius: 9999px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            backdrop-filter: blur(5px);
+        }
+
+        .nav-button {
+            background-color: #2563EB;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 9999px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+        }
+        
+        .nav-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 2px 8px rgba(37, 99, 235, 0.5);
+        }
+        
+        .nav-button:disabled {
+            background-color: #9ca3af;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .grid-3-col {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+        }
+
+        .card {
+            background-color: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            height: 100%;
+        }
+
+        .card-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: #1e3a8a;
+            margin-bottom: 1rem;
+        }
+
+        .table-container {
+            border: 1px solid #e2e8f0;
+            border-radius: 0.5rem;
+            overflow: hidden;
+        }
+        
+        .styled-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .styled-table th, .styled-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .styled-table th {
+            background-color: #f1f5f9;
+            font-weight: bold;
+            color: #475569;
+            font-size: 13px;
+        }
+
+        .styled-table td {
+            font-size: 13px;
+        }
+        
+        .styled-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .styled-table code {
+            background-color: #eef2ff;
+            color: #4338ca;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+
+        @media (max-width: 1280px) {
+            .presentation-container {
+                width: 95%;
+                height: auto;
+                aspect-ratio: auto;
+                margin: 1rem auto;
+            }
+            .slide {
+                padding: 2rem 2.5rem;
+            }
+             header {
+                padding: 1rem 2.5rem;
+            }
+            h1.title { font-size: 28px; }
+            h2.subtitle { font-size: 15px; }
+        }
+
+         @media (max-width: 768px) {
+            .grid-3-col {
+                grid-template-columns: 1fr;
+            }
+            .slide {
+                padding: 1.5rem;
+            }
+             header {
+                padding: 1rem 1.5rem;
+            }
+            h1.title { font-size: 24px; }
+            h2.subtitle { font-size: 14px; }
+            .nav-controls {
+                width: 90%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="presentation-container">
+        <header>
+            <div class="header-logo">Frontend Launchpad Workshop</div>
+            <div class="slide-counter" id="slideCounter"></div>
+        </header>
+
+        <!-- Slide 1: Title -->
+        <div class="slide active">
+            <div class="flex flex-col justify-center items-center text-center h-full">
+                <h1 class="gradient-title text-6xl font-black mb-4">프론트엔드 런치패드</h1>
+                <p class="text-2xl text-slate-600">파이썬 프로그래머를 위한 2시간 워크숍</p>
+                <div class="mt-12 border-t pt-4 text-slate-500">
+                    A Top-Tier Consulting Approach to Web Fundamentals
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 2: The "Why?" -->
+        <div class="slide">
+            <h1 class="title gradient-title">The Starting Point: Why Frontend?</h1>
+            <h2 class="subtitle">From Python Scripts to Interactive Web Experiences</h2>
+            <div class="slide-body">
+                <div class="grid grid-cols-2 gap-12 items-center">
+                    <div>
+                        <h3 class="section-title">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 16 4-4-4-4"/><path d="m6 8-4 4 4 4"/><path d="m14.5 4-5 16"/></svg>
+                            Our Current World: The Server
+                        </h3>
+                        <p>우리는 콘솔 출력, 데이터 처리, 비즈니스 로직 실행에 익숙합니다. 이러한 작업은 대부분 '서버'에서 이루어집니다.</p>
+                        <ul class="mt-4">
+                            <li>Python, Django, Flask</li>
+                            <li>Data Processing & Business Logic</li>
+                            <li>Runs on a powerful, remote computer</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3 class="section-title">
+                           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="12" x="3" y="9" rx="2" ry="2"/><line x1="12" x2="12" y1="3" y2="9"/></svg>
+                            Our New Frontier: The Client
+                        </h3>
+                        <p>프론트엔드는 사용자의 웹 브라우저, 즉 '클라이언트'에서 직접 실행되는 코드를 다룹니다. 사용자의 눈에 보이는 모든 것을 만듭니다.</p>
+                        <ul class="mt-4">
+                            <li>Visual Presentation & User Interaction</li>
+                            <li>Runs directly in the user's browser</li>
+                            <li>The focus of today's workshop</li>
+                        </ul>
+                    </div>
+                </div>
+                 <p class="mt-12 text-center bg-slate-100 p-4 rounded-lg text-slate-700 font-bold">Key takeaway: 서버(로직)와 클라이언트(표현)의 역할을 구분하는 것이 프론트엔드 개발의 첫걸음입니다.</p>
+            </div>
+        </div>
+        
+        <!-- Slide 3: Web's 3 Core Technologies -->
+        <div class="slide">
+            <h1 class="title gradient-title">The Three Pillars of the Web</h1>
+            <h2 class="subtitle">A core analogy for understanding frontend technologies: Building a House.</h2>
+            <div class="slide-body grid-3-col">
+                <div class="card">
+                    <h3 class="section-title">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>HTML: The Structure</h3>
+                    <p class="mb-4 text-sm"><strong>집의 뼈대와 설계도</strong></p>
+                    <p class="text-xs text-slate-600">콘텐츠의 구조와 의미를 정의합니다. "이것은 제목", "이것은 문단"과 같이 페이지의 골격을 만듭니다.</p>
+                    <div class="mt-4 p-2 bg-blue-50 rounded-md text-xs text-blue-800 font-mono">&lt;h1&gt;My Page&lt;/h1&gt;<br>&lt;p&gt;A paragraph.&lt;/p&gt;</div>
+                </div>
+                <div class="card">
+                    <h3 class="section-title">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m7 19-4-4 4-4"/><path d="m12 5 4 4-4 4"/><path d="m17 19-4-4 4-4"/></svg>CSS: The Style</h3>
+                    <p class="mb-4 text-sm"><strong>내/외부 인테리어와 장식</strong></p>
+                    <p class="text-xs text-slate-600">구조물에 시각적 매력을 더합니다. 색상, 레이아웃, 폰트 등 모든 디자인 요소를 담당합니다.</p>
+                     <div class="mt-4 p-2 bg-green-50 rounded-md text-xs text-green-800 font-mono">h1 {<br>&nbsp;&nbsp;color: blue;<br>}</div>
+                </div>
+                <div class="card">
+                    <h3 class="section-title">
+                       <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>JavaScript: The Functionality</h3>
+                    <p class="mb-4 text-sm"><strong>전기, 배관 등 각종 설비</strong></p>
+                    <p class="text-xs text-slate-600">웹 페이지를 '동작'하게 만듭니다. 사용자 상호작용, 데이터 요청 등 동적인 기능을 구현합니다.</p>
+                    <div class="mt-4 p-2 bg-yellow-50 rounded-md text-xs text-yellow-800 font-mono">button.onclick = ...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 4: Development Tools -->
+        <div class="slide">
+            <h1 class="title gradient-title">Your Development Toolkit</h1>
+            <h2 class="subtitle">No complex compilers needed. Your essentials are simple and already available.</h2>
+            <div class="slide-body grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div>
+                     <h3 class="section-title">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
+                        1. Modern Web Browser
+                    </h3>
+                    <p>Chrome 또는 Firefox를 권장합니다. 브라우저는 우리의 코드가 실행되는 환경 그 자체입니다.</p>
+                    <div class="mt-4 p-4 bg-slate-100 rounded-lg">
+                        <p class="font-bold text-slate-800">Key Feature: Developer Tools (F12)</p>
+                        <p class="text-sm text-slate-600 mt-2">웹 개발의 필수 도구입니다. 'Console' 탭은 JavaScript의 `print()` 역할을 하며, 디버깅의 핵심입니다.</p>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="section-title">
+                       <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 22h14a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Z"/><path d="M15 2v20"/><path d="M8 7h4"/><path d="M8 12h4"/><path d="M8 17h4"/></svg>
+                       2. Simple Text Editor
+                    </h3>
+                    <p>Visual Studio Code (VS Code)를 강력히 추천하지만, 어떤 텍스트 에디터든 사용 가능합니다.</p>
+                     <div class="mt-4 p-4 bg-slate-100 rounded-lg">
+                        <p class="font-bold text-slate-800">Today's Files</p>
+                        <p class="text-sm text-slate-600 mt-2">
+                            `index.html` (구조)<br>
+                            `style.css` (디자인)<br>
+                            JavaScript는 `index.html` 내에 작성합니다.
+                        </p>
+                    </div>
+                </div>
+            </div>
+             <p class="mt-12 text-center bg-amber-100 p-4 rounded-lg text-amber-800 text-sm">
+                <strong>Mental Shift:</strong> 파이썬의 순차적 실행과 달리, 웹페이지는 로딩 후 사용자의 '이벤트'(클릭, 입력 등)를 기다리는 **이벤트 기반(Event-Driven)** 모델로 동작합니다.
+            </p>
+        </div>
+
+        <!-- Slide 5: What is HTML? -->
+        <div class="slide">
+            <h1 class="title gradient-title">Part 2: Structuring with HTML</h1>
+            <h2 class="subtitle">HTML (HyperText Markup Language) is not a programming language; it's a markup language.</h2>
+            <div class="slide-body grid grid-cols-2 gap-12 items-start">
+                <div>
+                     <h3 class="section-title">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.72"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.72-1.72"/></svg>
+                        Anatomy of an HTML Element
+                    </h3>
+                    <p>HTML의 유일한 목적은 '태그'를 사용해 콘텐츠를 설명하고 구조화하는 것입니다.</p>
+                     <div class="mt-4 p-4 bg-slate-100 rounded-lg font-mono text-sm">
+                        <span class="text-purple-600">&lt;p</span> <span class="text-red-600">class="intro"</span><span class="text-purple-600">&gt;</span><br>
+                        &nbsp;&nbsp;이것이 콘텐츠입니다.<br>
+                        <span class="text-purple-600">&lt;/p&gt;</span>
+                    </div>
+                    <ul class="mt-4 text-sm">
+                       <li><strong>Opening Tag:</strong> <code>&lt;p&gt;</code> - 요소의 시작을 알립니다.</li>
+                       <li><strong>Content:</strong> 요소가 설명하는 실제 내용입니다.</li>
+                       <li><strong>Closing Tag:</strong> <code>&lt;/p&gt;</code> - 요소의 끝을 알립니다.</li>
+                       <li><strong>Attribute:</strong> <code>class="intro"</code> - 태그에 추가 정보를 제공합니다.</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="section-title">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 20H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h6"/><path d="m20 10-8 8-4-4"/><path d="m14 4 6 6"/></svg>
+                        HTML as a Data Structure: The DOM
+                    </h3>
+                    <p>HTML을 단순한 텍스트가 아닌, 브라우저가 파싱하여 만드는 **데이터 구조(DOM Tree)**로 이해하는 것이 중요합니다.</p>
+                    <p class="text-sm mt-4">여러분이 작성하는 모든 태그는 DOM 트리의 '노드(Node)'가 됩니다. 이 구조적 관점은 CSS와 JavaScript 작업의 기반이 됩니다.</p>
+                     <div class="mt-4 p-4 bg-blue-50 border-l-4 border-blue-400">
+                        <p class="font-bold text-blue-800">Analogy for Python Devs</p>
+                        <p class="text-sm text-blue-700 mt-2">Think of HTML as the source code for creating a nested data structure, like a tree of objects, that the browser holds in memory.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 6: Essential HTML Tags -->
+        <div class="slide">
+             <h1 class="title gradient-title">Essential HTML Tags</h1>
+             <h2 class="subtitle">These are the fundamental building blocks for any webpage.</h2>
+             <div class="slide-body">
+                <div class="table-container">
+                    <table class="styled-table">
+                        <thead>
+                            <tr><th>Tag</th><th>Name</th><th>Description</th><th>Type</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code>&lt;h1&gt;-&lt;h6&gt;</code></td>
+                                <td>Heading</td>
+                                <td>문서의 제목을 계층적으로 나타냅니다. <code>h1</code>이 가장 중요합니다.</td>
+                                <td class="importance-high">Block</td>
+                            </tr>
+                             <tr>
+                                <td><code>&lt;p&gt;</code></td>
+                                <td>Paragraph</td>
+                                <td>텍스트의 한 문단을 정의합니다.</td>
+                                <td class="importance-high">Block</td>
+                            </tr>
+                            <tr>
+                                <td><code>&lt;a&gt;</code></td>
+                                <td>Anchor (Link)</td>
+                                <td>다른 페이지로 연결되는 하이퍼링크를 만듭니다. (<code>href</code> 속성)</td>
+                                <td class="importance-mid">Inline</td>
+                            </tr>
+                            <tr>
+                                <td><code>&lt;img&gt;</code></td>
+                                <td>Image</td>
+                                <td>웹페이지에 이미지를 삽입합니다. (<code>src</code>, <code>alt</code> 속성)</td>
+                                 <td class="importance-mid">Inline</td>
+                            </tr>
+                             <tr>
+                                <td><code>&lt;div&gt;</code></td>
+                                <td>Division</td>
+                                <td>여러 요소를 그룹화하는 범용 블록 레벨 컨테이너입니다. (레이아웃의 핵심)</td>
+                                <td class="importance-high">Block</td>
+                            </tr>
+                            <tr>
+                                <td><code>&lt;ul&gt;</code> / <code>&lt;li&gt;</code></td>
+                                <td>List</td>
+                                <td><code>ul</code>(순서 없는 목록)과 <code>li</code>(목록 항목)를 정의합니다.</td>
+                                <td class="importance-high">Block</td>
+                            </tr>
+                            <tr>
+                                <td><code>&lt;span&gt;</code></td>
+                                <td>Span</td>
+                                <td>텍스트의 일부를 그룹화하는 범용 인라인 컨테이너입니다.</td>
+                                <td class="importance-low">Inline</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="mt-6 text-center bg-slate-100 p-4 rounded-lg">
+                    <strong>Block</strong> 요소는 전체 너비를 차지하고 새 줄에서 시작하며, <strong>Inline</strong> 요소는 콘텐츠 크기만큼만 차지하고 줄바꿈 없이 배치됩니다.
+                </div>
+             </div>
+        </div>
+        
+        <!-- Slide 7: What is CSS? -->
+        <div class="slide">
+            <h1 class="title gradient-title">Part 3: Styling with CSS</h1>
+            <h2 class="subtitle">CSS (Cascading Style Sheets) is the language for describing the presentation of a webpage.</h2>
+            <div class="slide-body grid grid-cols-2 gap-12 items-start">
+                <div>
+                     <h3 class="section-title">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>
+                        Anatomy of a CSS Rule
+                    </h3>
+                    <p>CSS는 '선택자'와 '선언'으로 구성된 간단한 문법을 가집니다.</p>
+                     <div class="mt-4 p-4 bg-slate-100 rounded-lg font-mono text-sm">
+                        <span class="text-red-600">.profile-card</span> {<br>
+                        &nbsp;&nbsp;<span class="text-blue-600">background-color</span>: <span class="text-green-600">white</span>;<br>
+                        &nbsp;&nbsp;<span class="text-blue-600">padding</span>: <span class="text-green-600">20px</span>;<br>
+                        }
+                    </div>
+                    <ul class="mt-4 text-sm">
+                       <li><strong>Selector:</strong> <code>.profile-card</code> - 스타일을 적용할 HTML 요소를 지정합니다.</li>
+                       <li><strong>Declaration Block:</strong> <code>{...}</code> - 하나 이상의 선언을 포함합니다.</li>
+                       <li><strong>Property:</strong> <code>background-color</code> - 바꾸고 싶은 스타일 속성입니다.</li>
+                       <li><strong>Value:</strong> <code>white</code> - 속성에 적용할 값입니다.</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="section-title">
+                       <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05-9.27 22.39a2.05 2.05 0 0 1-2.9-2.91L18.88 2.56a2.05 2.05 0 0 1 2.9 2.9Z"/><path d="m11.5 6.5-5 5"/><path d="m20 12.5-5 5"/></svg>
+                        The "Cascade" and Separation
+                    </h3>
+                    <p><strong>Separation of Concerns:</strong> 스타일(CSS)을 구조(HTML)와 분리하는 것은 재사용성과 유지보수성의 핵심입니다. 100개 버튼의 색상을 한번에 바꿀 수 있습니다.</p>
+                    <p class="text-sm mt-4"><strong>Cascading:</strong> 스타일은 폭포수처럼 위에서 아래로 적용되며, 여러 규칙이 충돌할 경우 더 '구체적인(specific)' 규칙이 우선순위를 가집니다.</p>
+                     <div class="mt-4 p-4 bg-blue-50 border-l-4 border-blue-400">
+                        <p class="font-bold text-blue-800">Specificity Hierarchy (High to Low)</p>
+                        <p class="text-sm text-blue-700 mt-2">Inline Styles > ID (<code>#id</code>) > Class (<code>.class</code>) > Tag (<code>p</code>)</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 8: The Box Model -->
+        <div class="slide">
+            <h1 class="title gradient-title">The Box Model: The #1 CSS Concept</h1>
+            <h2 class="subtitle">Every element in HTML is a rectangular box. Understanding its parts is key to layout.</h2>
+            <div class="slide-body flex items-center justify-center">
+                <div class="w-full max-w-2xl text-center">
+                    <div class="bg-slate-200 p-8 rounded-lg">
+                        <p class="font-bold text-slate-600">Margin (바깥 여백)</p>
+                        <div class="border-2 border-dashed border-slate-500 bg-slate-200 p-8 rounded">
+                            <p class="font-bold text-slate-600">Border (테두리)</p>
+                             <div class="border-2 border-slate-700 bg-blue-100 p-8 rounded">
+                                <p class="font-bold text-blue-700">Padding (안쪽 여백)</p>
+                                <div class="bg-blue-500 text-white font-bold p-12 rounded-sm">
+                                    Content
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4 mt-6 text-left text-sm">
+                        <p><strong>Content:</strong> 실제 텍스트나 이미지가 들어가는 영역.</p>
+                        <p><strong>Padding:</strong> 테두리 안쪽의 여백. 콘텐츠와 테두리 사이의 공간.</p>
+                        <p><strong>Border:</strong> 패딩과 콘텐츠를 감싸는 선.</p>
+                        <p><strong>Margin:</strong> 테두리 바깥쪽의 여백. 다른 요소를 밀어내는 공간.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Slide 9: What is JavaScript? -->
+        <div class="slide">
+             <h1 class="title gradient-title">Part 4: Interacting with JavaScript</h1>
+             <h2 class="subtitle">JavaScript is a full programming language that runs in the browser. It brings your page to life.</h2>
+             <div class="slide-body grid grid-cols-2 gap-12">
+                 <div>
+                    <h3 class="section-title">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+                        Familiar Concepts
+                    </h3>
+                    <p>파이썬처럼 변수, 자료형, 함수, 반복문, 조건문을 모두 가지고 있습니다. 문법은 다르지만, 기본 개념은 동일합니다.</p>
+                    <div class="mt-4 p-4 bg-blue-50 border-l-4 border-blue-400">
+                        <p class="font-bold text-blue-800">Python vs. JavaScript</p>
+                        <p class="text-sm text-blue-700 mt-2">If you can write <code>def my_func():</code> in Python, you can write <code>function myFunc() {}</code> in JavaScript. You are not starting from scratch!</p>
+                    </div>
+                 </div>
+                 <div>
+                     <h3 class="section-title">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 10.5 8 13l2 2.5"/><path d="m14 10.5 2 2.5-2 2.5"/><path d="M14.5 19H.5a.5.5 0 0 1-.5-.5v-18a.5.5 0 0 1 .5-.5h23a.5.5 0 0 1 .5.5v11.5"/><path d="M18 22v-4.5m-3 3 3 3 3-3"/></svg>
+                        The Core Mission
+                    </h3>
+                    <p>JavaScript의 주된 임무는 브라우저 내에서 다음 두 가지를 수행하는 것입니다.</p>
+                    <ul class="mt-4">
+                        <li><strong>React to user events:</strong> Clicks, mouse movements, keyboard input, etc.</li>
+                        <li><strong>Manipulate the DOM:</strong> Dynamically change the HTML and CSS of the page.</li>
+                    </ul>
+                 </div>
+             </div>
+        </div>
+
+        <!-- Slide 10: The Core JS Pattern -->
+        <div class="slide">
+             <h1 class="title gradient-title">The Fundamental JavaScript Pattern</h1>
+             <h2 class="subtitle">Nearly all simple frontend interactions follow this 3-step mental recipe.</h2>
+             <div class="slide-body">
+                <div class="grid-3-col text-center">
+                    <div class="p-6">
+                        <div class="bg-blue-100 text-blue-600 rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-4 font-black text-3xl">1</div>
+                        <h3 class="text-lg font-bold text-slate-800">SELECT</h3>
+                        <p class="mt-2 text-sm">조작하고 싶은 HTML 요소를 선택하여 변수에 저장합니다.</p>
+                        <p class="mt-4 p-2 bg-slate-100 rounded-md text-xs font-mono">const button = document.querySelector('#my-btn');</p>
+                    </div>
+                     <div class="p-6">
+                        <div class="bg-green-100 text-green-600 rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-4 font-black text-3xl">2</div>
+                        <h3 class="text-lg font-bold text-slate-800">LISTEN</h3>
+                        <p class="mt-2 text-sm">선택한 요소에서 특정 '이벤트'가 발생하는 것을 감지합니다.</p>
+                         <p class="mt-4 p-2 bg-slate-100 rounded-md text-xs font-mono">button.addEventListener('click', ...);</p>
+                    </div>
+                     <div class="p-6">
+                        <div class="bg-purple-100 text-purple-600 rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-4 font-black text-3xl">3</div>
+                        <h3 class="text-lg font-bold text-slate-800">MANIPULATE</h3>
+                        <p class="mt-2 text-sm">이벤트가 발생했을 때 실행할 함수를 통해 DOM을 조작합니다.</p>
+                         <p class="mt-4 p-2 bg-slate-100 rounded-md text-xs font-mono">() => { heading.textContent = 'New text!'; }</p>
+                    </div>
+                </div>
+                 <p class="mt-8 text-center bg-slate-100 p-4 rounded-lg text-slate-700 font-bold">This "Select, Listen, Manipulate" pattern is your roadmap for making things happen on a webpage.</p>
+             </div>
+        </div>
+
+        <!-- Slide 11: Python vs JS Syntax -->
+        <div class="slide">
+            <h1 class="title gradient-title">Syntax Side-by-Side: Python vs. JavaScript</h1>
+            <h2 class="subtitle">The concepts are the same, just with different punctuation.</h2>
+            <div class="slide-body">
+               <div class="table-container">
+                   <table class="styled-table">
+                       <thead>
+                           <tr>
+                               <th>Concept</th>
+                               <th>Python Example</th>
+                               <th>JavaScript Example</th>
+                               <th class="w-1/4">Key Differences</th>
+                           </tr>
+                       </thead>
+                       <tbody>
+                           <tr>
+                               <td>Variable Declaration</td>
+                               <td><code>my_var = 10</code></td>
+                               <td><code>const myVar = 10;</code></td>
+                               <td>JS uses <code>const</code>/<code>let</code>, camelCase, and semicolons.</td>
+                           </tr>
+                           <tr>
+                               <td>Function Definition</td>
+                               <td><code>def my_func():<br>&nbsp;&nbsp;pass</code></td>
+                               <td><code>function myFunc() {<br>&nbsp;&nbsp;// code<br>}</code></td>
+                               <td>JS uses <code>function</code> keyword and curly braces <code>{}</code>.</td>
+                           </tr>
+                           <tr>
+                               <td>Conditional Statement</td>
+                               <td><code>if x > 5:<br>&nbsp;&nbsp;print("hi")</code></td>
+                               <td><code>if (x > 5) {<br>&nbsp;&nbsp;console.log("hi");<br>}</code></td>
+                               <td>JS uses parentheses <code>()</code> for conditions and braces for blocks.</td>
+                           </tr>
+                           <tr>
+                               <td>Console Output</td>
+                               <td><code>print("Hello")</code></td>
+                               <td><code>console.log("Hello");</code></td>
+                               <td>The standard output in the browser is the `console`.</td>
+                           </tr>
+                       </tbody>
+                   </table>
+               </div>
+            </div>
+        </div>
+        
+        <!-- Slide 12: Conclusion & Next Steps -->
+        <div class="slide">
+            <h1 class="title gradient-title">Part 5: Conclusion & Next Steps</h1>
+            <h2 class="subtitle">You've successfully built an interactive web component. What's next on the journey?</h2>
+            <div class="slide-body grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div>
+                    <h3 class="section-title">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                        What We've Accomplished
+                    </h3>
+                    <p>2시간 동안 우리는 완전한 웹 컴포넌트 개발 사이클을 경험했습니다.</p>
+                    <ul>
+                        <li><strong class="importance-low">HTML:</strong> Structure and semantics (<code>div</code>, <code>h1</code>, <code>img</code>)</li>
+                        <li><strong class="importance-mid">CSS:</strong> Presentation and layout (centering, colors, box model)</li>
+                        <li><strong class="importance-high">JavaScript:</strong> Interactivity ("Select, Listen, Manipulate")</li>
+                    </ul>
+                </div>
+                <div>
+                     <h3 class="section-title">
+                       <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" x2="19" y1="12" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                        The Road Ahead
+                    </h3>
+                    <p>프론트엔드의 세계는 넓고 깊습니다. 다음 단계로 추천하는 개념들입니다.</p>
+                     <ul>
+                        <li><strong>CSS Layout:</strong> Master Flexbox & Grid for complex layouts.</li>
+                        <li><strong>JS Frameworks:</strong> Explore React or Vue.js for managing complex application state.</li>
+                        <li><strong>Full-Stack:</strong> Connect your frontend skills with your Python backend (Flask/Django APIs).</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 13: Q&A -->
+         <div class="slide">
+            <div class="flex flex-col justify-center items-center text-center h-full">
+                <h1 class="gradient-title text-6xl font-black mb-4">Q & A</h1>
+                <p class="text-2xl text-slate-600">질문과 답변</p>
+                <div class="mt-12 text-lg text-slate-500">
+                    <p>Recommended Resource:</p>
+                    <a href="https://developer.mozilla.org" target="_blank" class="font-bold text-blue-600 hover:underline">MDN Web Docs (Mozilla Developer Network)</a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="nav-controls">
+        <button id="prevBtn" class="nav-button">이전</button>
+        <button id="nextBtn" class="nav-button">다음</button>
+    </div>
+
+    <script>
+        const slides = document.querySelectorAll('.slide');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const slideCounter = document.getElementById('slideCounter');
+
+        let currentSlide = 0;
+        const totalSlides = slides.length;
+
+        function showSlide(index) {
+            slides.forEach((slide, i) => {
+                slide.classList.toggle('active', i === index);
+            });
+            currentSlide = index;
+            updateControls();
+        }
+
+        function updateControls() {
+            prevBtn.disabled = currentSlide === 0;
+            nextBtn.disabled = currentSlide === totalSlides - 1;
+            slideCounter.textContent = `Slide ${currentSlide + 1} of ${totalSlides}`;
+        }
+
+        prevBtn.addEventListener('click', () => {
+            if (currentSlide > 0) {
+                showSlide(currentSlide - 1);
+            }
+        });
+
+        nextBtn.addEventListener('click', () => {
+            if (currentSlide < totalSlides - 1) {
+                showSlide(currentSlide + 1);
+            }
+        });
+        
+        // 키보드 네비게이션
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight') {
+                nextBtn.click();
+            } else if (e.key === 'ArrowLeft') {
+                prevBtn.click();
+            }
+        });
+
+        // 초기 상태 설정
+        showSlide(0);
+    </script>
+
+</body>
+</html>
+
